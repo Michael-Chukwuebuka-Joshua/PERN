@@ -83,10 +83,12 @@ export const editComment = async (req:Request<{commentId: string}>, res: Respons
         }
 
         if (existingComment.userId !== userId) {
-            res.status(403).json({error: "You can only edit your own comments"})
+            return res.status(403).json({error: "You can only edit your own comments"})
         }
 
-        await queries.editComment(commentId)
+        await queries.editComment(commentId, {
+          content,
+        })
         res.status(200).json({message: "Comment edited successfully"})
     } catch(error) {
         console.error("Error editing comment", error)

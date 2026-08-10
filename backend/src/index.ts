@@ -18,7 +18,7 @@ app.get("/", (req, res) => {
 })
 
 app.use("/api/users", userRoutes)
-app.use("/api/users", productRoutes)
-app.use("/api/users", commentRoutes)
+app.use("/api/products", productRoutes)
+app.use("/api/comments", commentRoutes)
 
 app.listen(ENV.PORT, () => console.log(`Server running on PORT ${ENV.PORT}`))
