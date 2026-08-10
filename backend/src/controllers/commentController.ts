@@ -69,10 +69,12 @@ export const deleteComment = async (
 export const editComment = async (req:Request<{commentId: string}>, res: Response) => {
     try {
         const {userId} = getAuth(req)
-        if (!userId) return res.status(401).json("Unauthorized")
+        if (!userId) return res.status(401).json({error: "Unauthorized"})
 
-            const {commentId} = req.params
-            const {content} = req.body
+        const {commentId} = req.params
+        const {content} = req.body
+
+        if (!content) return res.status(400).json({error: "Comment content is required"})
 
         //Check if comment exists and belongs to user
         const existingComment = await queries.getCommentById(commentId)
@@ -86,12 +88,12 @@ export const editComment = async (req:Request<{commentId: string}>, res: Respons
             return res.status(403).json({error: "You can only edit your own comments"})
         }
 
-        await queries.editComment(commentId, {
+        const comment = await queries.editComment(commentId, {
           content,
         })
-        res.status(200).json({message: "Comment edited successfully"})
+        res.status(200).json(comment)
     } catch(error) {
         console.error("Error editing comment", error)
-        res.status(500).json({error: "Error editing coment"})
+        res.status(500).json({error: "Error editing comment"})
     }
 }

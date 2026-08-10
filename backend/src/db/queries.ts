@@ -92,7 +92,7 @@ export const getProductsByUserId = async (userId: string) => {
 };
 
 export const updateProduct = async (id: string, data: Partial<NewProduct>) => {
-  const existingProduct = getProductById(id);
+  const existingProduct = await getProductById(id);
   if (!existingProduct) {
     throw new Error(`Product with id ${id} not found`);
   }
@@ -105,7 +105,7 @@ export const updateProduct = async (id: string, data: Partial<NewProduct>) => {
 };
 
 export const deleteProduct = async (id: string) => {
-  const existingProduct = getProductById(id);
+  const existingProduct = await getProductById(id);
   if (!existingProduct) {
     throw new Error(`Product with id ${id} not found`);
   }
@@ -123,7 +123,7 @@ export const createComment = async (data: NewComment) => {
 };
 
 export const deleteComment = async (id: string) => {
-  const existingComment = getCommentById(id);
+  const existingComment = await getCommentById(id);
   if (!existingComment) {
     throw new Error(`Comment with id ${id} not found`);
   }
@@ -140,7 +140,7 @@ export const getCommentById = async (id: string) => {
   });
 };
 export const editComment = async (id: string, data: Partial<NewComment>) => {
-    const existingComment = getCommentById(id)
+    const existingComment = await getCommentById(id)
     if(!existingComment) {
         throw new Error(`Comment with id ${id} not found`)
     }
