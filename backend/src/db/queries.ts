@@ -8,7 +8,6 @@ import {
   type NewComment,
   type NewProduct,
 } from "./schema";
-import { date } from "drizzle-orm/mysql-core";
 
 // USER QUERIES
 export const createUser = async (data: NewUser) => {
@@ -47,7 +46,12 @@ export const upsertUser = async (data: NewUser) => {
     .values(data)
     .onConflictDoUpdate({
       target: users.id,
-      set: data,
+      set: {
+        email: data.email,
+        name:data.name,
+        imageUrl: data.imageUrl,
+        updatedAt: new Date()
+      },
     })
     .returning();
   return user;
@@ -135,3 +139,12 @@ export const getCommentById = async (id: string) => {
     with: { user: true },
   });
 };
+export const editComment = async (id: string, data: Partial<NewComment>) => {
+    const existingComment = getCommentById(id)
+    if(!existingComment) {
+        throw new Error(`Comment with id ${id} not found`)
+    }
+
+    const [comment] = await db.update(comments).set(data).where(eq(comments.id, id)).returning();
+    return comment
+}
