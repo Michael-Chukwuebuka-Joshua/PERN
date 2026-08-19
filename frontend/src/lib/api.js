@@ -23,12 +23,12 @@ export const getMyProducts = async () => {
 }
 
 export const createProduct = async (productData) => {
-    const { data } = api.post("/products", productData)
+    const { data } = await api.post("/products", productData)
     return data
 }
 
 export const updateProduct = async ({id, ...productData}) => {
-    const { data } = api.put(`/products/${id}`, productData)
+    const { data } = await api.put(`/products/${id}`, productData)
     return data
 }
 

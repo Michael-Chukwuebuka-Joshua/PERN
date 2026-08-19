@@ -9,7 +9,7 @@ export default function useAuthReq() {
 
   // include the token to the request headers
   useEffect(() => {
-    if(!isInterceptorRegistered) return
+    if(isInterceptorRegistered) return
     isInterceptorRegistered = true
     
     const interceptor = api.interceptors.request.use(async (config) => {

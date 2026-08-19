@@ -19,6 +19,11 @@ export const getUserById = async (id: string) => {
   return db.query.users.findFirst({ where: eq(users.id, id) });
 };
 
+export const deleteUser = async (id: string) => {
+  const [user] = await db.delete(users).where(eq(users.id, id)).returning();
+  return user;
+};
+
 export const updateUser = async (id: string, data: Partial<NewUser>) => {
   const existingUser = await getUserById(id);
   if (!existingUser) {

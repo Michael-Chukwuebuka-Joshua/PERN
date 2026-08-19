@@ -10,6 +10,8 @@ import commentRoutes from "./routes/commentRoutes"
 const app = express()
 app.use(cors({origin: ENV.FRONTEND_URL, credentials: true})) // `credentials: true` allows the frontend to send cookies to the backend so that we can authenticate the user
 app.use(clerkMiddleware()) // auth object attached to the req
+// Webhooks need the raw body for signature verification, so parse them BEFORE express.json()
+app.use("/api/webhooks/clerk", express.raw({ type: "application/json" }))
 app.use(express.json()) // parse JSON request bodies
 app.use(express.urlencoded({extended: true})) //parses form data (like HTML forms)
 

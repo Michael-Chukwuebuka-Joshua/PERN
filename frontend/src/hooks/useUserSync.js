@@ -1,11 +1,12 @@
 import { useAuth, useUser } from "@clerk/react";
 import { useMutation } from "@tanstack/react-query";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { syncUser } from "../lib/api";
 
 export default function useUserSync() {
   const { isSignedIn } = useAuth();
   const { user } = useUser();
+  const [syncedUserId, setSyncedUserId] = useState(null);
 
   const {
     mutate: syncUserMutation,
@@ -14,30 +15,36 @@ export default function useUserSync() {
     isError,
   } = useMutation({
     mutationFn: syncUser,
+    retry: 3,
+    retryDelay: 1000,
+    onSuccess: (_data, variables) => setSyncedUserId(variables.userId),
     onError: (error) => {
-      console.error("Failed to sync user:", error);
-      console.error("Status:", error.response?.status);
-      console.error("Response:", error.response?.data);
-      console.error("Request:", error.config?.data);
+      console.error("Failed to sync user", {
+        status: error.response?.status,
+      });
     },
-    // Optionally show a toast notfication or retry
   });
 
   useEffect(() => {
-    if (isSignedIn && user && !isPending && !isSuccess && !isError) {
-      const email = user.primaryEmailAddress?.emailAddress;
+    if (!isSignedIn || !user) return;
 
-      if (!email) {
-        console.error("User has no primary email");
-        return;
-      }
-      syncUserMutation({
-        email,
-        name: user.fullName || user.firstName,
-        imageUrl: user.imageUrl,
-      });
+    const email = user.primaryEmailAddress?.emailAddress;
+    if (!email) {
+      console.error("User has no primary email");
+      return;
     }
-  }, [isSignedIn, user, syncUserMutation, isPending, isSuccess, isError]);
+    syncUserMutation({
+      userId: user.id,
+      email,
+      name: user.fullName || user.firstName || "",
+      imageUrl: user.imageUrl || "",
+    });
+  }, [isSignedIn, user, syncUserMutation]);
 
-  return { isSynced: isSuccess };
+  const noEmail =
+    isSignedIn && !!user && !user.primaryEmailAddress?.emailAddress;
+
+  const isSynced = isSuccess && syncedUserId === user?.id;
+
+  return { isSynced, isPending, isError, noEmail };
 }
