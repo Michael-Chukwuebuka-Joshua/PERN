@@ -11,17 +11,33 @@ export default function useUserSync() {
     mutate: syncUserMutation,
     isPending,
     isSuccess,
-  } = useMutation({ mutationFn: syncUser });
+    isError,
+  } = useMutation({
+    mutationFn: syncUser,
+    onError: (error) => {
+      console.error("Failed to sync user:", error);
+      console.error("Status:", error.response?.status);
+      console.error("Response:", error.response?.data);
+      console.error("Request:", error.config?.data);
+    },
+    // Optionally show a toast notfication or retry
+  });
 
   useEffect(() => {
-    if (isSignedIn && user && !isPending && !isSuccess) {
+    if (isSignedIn && user && !isPending && !isSuccess && !isError) {
+      const email = user.primaryEmailAddress?.emailAddress;
+
+      if (!email) {
+        console.error("User has no primary email");
+        return;
+      }
       syncUserMutation({
-        email: user.primaryEmailAddress.emailAddress,
+        email,
         name: user.fullName || user.firstName,
         imageUrl: user.imageUrl,
       });
     }
-  }, [isSignedIn, user, syncUserMutation, isPending, isSuccess]);
+  }, [isSignedIn, user, syncUserMutation, isPending, isSuccess, isError]);
 
-  return {isSynced : isSuccess};
+  return { isSynced: isSuccess };
 }
