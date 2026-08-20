@@ -13,7 +13,7 @@ export const getAllProducts = async () => {
 }
 
 export const getProductById = async (id) => {
-    const { data } = await api.get("/products/:id")
+    const { data } = await api.get(`/products/${id}`)
     return data
 }
 
@@ -49,6 +49,6 @@ export const deleteComment = async ({commentId}) => {
 }
 
 export const editComment = async ({commentId, content}) => {
-    const { data } = await api.put(`/comments/${commentId}`, content)
+    const { data } = await api.put(`/comments/${commentId}`, { content })
     return data
 }
