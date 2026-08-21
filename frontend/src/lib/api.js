@@ -20,7 +20,7 @@ export const getProductById = async (id) => {
 export const getMyProducts = async () => {
     const { data } = await api.get("/products/my")
     return data
-}
+}   
 
 export const createProduct = async (productData) => {
     const { data } = await api.post("/products", productData)
